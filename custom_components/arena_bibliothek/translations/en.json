@@ -1,0 +1,47 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Add library account",
+        "description": "Credentials for the Axiell Arena online catalogue.",
+        "data": {
+          "base_url": "Catalogue base URL",
+          "username": "Library card number",
+          "password": "Password"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Re-enter password",
+        "description": "Sign-in for {username} was rejected.",
+        "data": { "password": "Password" }
+      }
+    },
+    "error": {
+      "cannot_connect": "Catalogue unreachable.",
+      "invalid_auth": "Wrong card number or password."
+    },
+    "abort": {
+      "already_configured": "This card is already set up.",
+      "reauth_successful": "Sign-in restored."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Polling interval",
+        "data": { "scan_hours": "Hours between refreshes" }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "loans": { "name": "Loans" },
+      "next_due_date": { "name": "Next due date" },
+      "days_until_due": { "name": "Days until due" },
+      "overdue": { "name": "Overdue" }
+    },
+    "calendar": {
+      "due_dates": { "name": "Due dates" }
+    }
+  }
+}

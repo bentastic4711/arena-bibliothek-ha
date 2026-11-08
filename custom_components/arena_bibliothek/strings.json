@@ -1,0 +1,47 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Bibliothekskonto hinzufügen",
+        "description": "Zugangsdaten des Online-Katalogs (Axiell Arena).",
+        "data": {
+          "base_url": "Basis-URL des Katalogs",
+          "username": "Ausweisnummer",
+          "password": "Passwort"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Passwort erneut eingeben",
+        "description": "Die Anmeldung für {username} wurde abgelehnt.",
+        "data": { "password": "Passwort" }
+      }
+    },
+    "error": {
+      "cannot_connect": "Katalog nicht erreichbar.",
+      "invalid_auth": "Ausweisnummer oder Passwort falsch."
+    },
+    "abort": {
+      "already_configured": "Dieser Ausweis ist bereits eingerichtet.",
+      "reauth_successful": "Anmeldung wieder erfolgreich."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Abrufintervall",
+        "data": { "scan_hours": "Stunden zwischen zwei Abrufen" }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "loans": { "name": "Ausleihen" },
+      "next_due_date": { "name": "Nächste Rückgabe" },
+      "days_until_due": { "name": "Tage bis Rückgabe" },
+      "overdue": { "name": "Überfällig" }
+    },
+    "calendar": {
+      "due_dates": { "name": "Rückgabefristen" }
+    }
+  }
+}

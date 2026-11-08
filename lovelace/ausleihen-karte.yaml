@@ -1,0 +1,24 @@
+# Markdown-Karte: alle Ausleihen mit Icon, Frist und Restlaufzeit.
+# sensor.bibliothek_12345_ausleihen durch die eigene Entity-ID ersetzen.
+type: markdown
+content: |-
+  {% set loans = state_attr('sensor.bibliothek_12345_ausleihen', 'loans') or [] %}
+  ### <ha-icon icon="mdi:bookshelf"></ha-icon> Bibliothek
+  {% if loans %}
+  {% for l in loans %}
+  {%- set tage = l.days_left -%}
+  {%- set icon = {'Buch': 'mdi:book-open-page-variant', 'Zeitschrift': 'mdi:newspaper-variant-outline', 'DVD': 'mdi:disc', 'CD': 'mdi:album'}.get(l.media_type, 'mdi:bookmark-outline') -%}
+  {%- if tage < 0 -%}
+    {%- set farbe = 'var(--error-color)' -%}{%- set frist = (-tage) ~ ' Tage überfällig' -%}
+  {%- elif tage <= 3 -%}
+    {%- set farbe = 'var(--warning-color)' -%}{%- set frist = 'nur noch ' ~ tage ~ ' Tage' -%}
+  {%- else -%}
+    {%- set farbe = 'var(--secondary-text-color)' -%}{%- set frist = 'noch ' ~ tage ~ ' Tage' -%}
+  {%- endif %}
+  <ha-icon icon="{{ icon }}" style="color: var(--primary-color);"></ha-icon> **{{ l.title | truncate(44) }}**
+  <span style="color: {{ farbe }};">{{ l.due_date[8:10] }}.{{ l.due_date[5:7] }}. · {{ frist }} · {{ l.renewals_left if l.renewals_left is not none else 'nicht' }}× verlängerbar</span>
+
+  {% endfor %}
+  {% else %}
+  Aktuell nichts ausgeliehen.
+  {% endif %}

@@ -1,0 +1,90 @@
+blueprint:
+  name: Bibliothek – Erinnerung vor der Rückgabe
+  description: >
+    Meldet sich, wenn ausgeliehene Medien innerhalb der nächsten Tage fällig
+    werden. Braucht die Integration „Arena Bibliothek“.
+
+    Für die Benachrichtigung stehen diese Variablen bereit:
+      {{ titel }}      – z. B. „Bibliothek: 2 Medien fällig“
+      {{ nachricht }}  – Liste der Titel mit Frist und Verlängerungen
+      {{ anzahl }}     – Anzahl betroffener Medien
+  domain: automation
+  author: Arena Bibliothek
+  source_url: https://github.com/bentastic4711/arena-bibliothek-ha/blob/main/blueprints/automation/arena_bibliothek/rueckgabe_erinnerung.yaml
+  input:
+    ausleihen_sensor:
+      name: Ausleihen-Sensor
+      description: Der Sensor mit der Anzahl der Ausleihen (enthält die Details).
+      selector:
+        entity:
+          filter:
+            - integration: arena_bibliothek
+              domain: sensor
+    vorlauf:
+      name: Vorlauf
+      description: Wie viele Tage vor der Rückgabe erinnert werden soll.
+      default: 3
+      selector:
+        number:
+          min: 1
+          max: 14
+          step: 1
+          unit_of_measurement: Tage
+    uhrzeit:
+      name: Uhrzeit
+      description: Wann täglich geprüft wird.
+      default: "18:00:00"
+      selector:
+        time:
+    nur_nicht_verlaengerbar:
+      name: Nur was nicht mehr verlängerbar ist
+      description: >
+        Wenn aktiv, wird nur gemeldet, was zurück muss – Medien mit
+        verbleibenden Verlängerungen bleiben still.
+      default: false
+      selector:
+        boolean:
+    benachrichtigung:
+      name: Benachrichtigung
+      description: >
+        Was passieren soll. Meist eine notify-Aktion mit {{ titel }} und
+        {{ nachricht }} als Inhalt.
+      selector:
+        action:
+
+mode: single
+max_exceeded: silent
+
+triggers:
+  - trigger: time
+    at: !input uhrzeit
+
+variables:
+  ausleihen_entity: !input ausleihen_sensor
+  vorlauf: !input vorlauf
+  nur_kritisch: !input nur_nicht_verlaengerbar
+  faellig: >
+    {% set alle = state_attr(ausleihen_entity, 'loans') or [] %}
+    {% set nah = alle | rejectattr('days_left', 'none')
+                      | selectattr('days_left', 'le', vorlauf | int) | list %}
+    {{ (nah | rejectattr('renewable') | list) if nur_kritisch else nah }}
+  anzahl: "{{ faellig | count }}"
+  titel: "Bibliothek: {{ anzahl }} {{ 'Medium' if anzahl | int == 1 else 'Medien' }} fällig"
+  nachricht: >
+    {%- for l in faellig %}
+    • {{ l.title }} – {{ l.due_date[8:10] }}.{{ l.due_date[5:7] }}.
+    {%- if l.days_left < 0 %} ({{ -l.days_left }} Tage überfällig)
+    {%- elif l.days_left == 0 %} (heute)
+    {%- else %} (in {{ l.days_left }} Tagen)
+    {%- endif %}
+    {%- if l.renewable %}, {{ l.renewals_left }}× verlängerbar
+    {%- else %}, nicht mehr verlängerbar
+    {%- endif %}
+    {%- endfor %}
+
+conditions:
+  - condition: template
+    value_template: "{{ faellig | count > 0 }}"
+
+actions:
+  - sequence: !input benachrichtigung
