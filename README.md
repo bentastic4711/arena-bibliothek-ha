@@ -24,9 +24,13 @@ Integration automatisch neu an.
 
 ### Über HACS
 
-1. HACS öffnen, oben rechts das Dreipunktmenü, *Custom repositories*
-2. `https://github.com/bentastic4711/arena-bibliothek-ha` eintragen, Kategorie *Integration*
-3. „Arena Bibliothek" installieren, Home Assistant neu starten
+1. HACS öffnen und nach **„Arena Bibliothek"** suchen
+2. Installieren, Home Assistant neu starten
+
+Taucht die Integration in der Suche noch nicht auf, lässt sie sich als
+Custom Repository hinzufügen: in HACS oben rechts das Dreipunktmenü,
+*Custom repositories*, dort `https://github.com/bentastic4711/arena-bibliothek-ha`
+mit der Kategorie *Integration* eintragen.
 
 ### Von Hand
 
